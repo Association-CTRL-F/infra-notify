@@ -1,8 +1,8 @@
 use reqwest::blocking::{Client, Response};
 use reqwest::Error;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Message {
     pub username: Option<String>,
     pub avatar_url: Option<String>,
@@ -10,7 +10,7 @@ pub struct Message {
     pub embeds: Option<Vec<Embeds>>,
 }
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Embeds {
     pub author: Option<Author>,
     pub title: Option<String>,
@@ -23,31 +23,31 @@ pub struct Embeds {
     pub footer: Option<Footer>,
 }
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Author {
     pub name: Option<String>,
     pub url: Option<String>,
     pub icon_url: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Fields {
     pub name: Option<String>,
     pub value: Option<String>,
     pub inline: Option<bool>,
 }
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Thumbnail {
     pub url: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Image {
     pub url: Option<String>,
 }
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Serialize, Default)]
 pub struct Footer {
     pub text: Option<String>,
     pub icon_url: Option<String>,
