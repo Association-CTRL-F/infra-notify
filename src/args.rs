@@ -1,7 +1,7 @@
-use clap::{ArgGroup, Command};
-
+use clap::{crate_version, ArgGroup, Command};
 pub fn cli() -> Command {
     Command::new("infra-notify")
+        .version(crate_version!())
         .subcommand_required(true)
         .subcommand(Command::new("dump-success"))
         .subcommand(Command::new("dump-failure"))
