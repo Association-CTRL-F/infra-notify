@@ -1,8 +1,11 @@
-use clap::Parser;
+use clap::{ArgGroup, Command};
 
-#[derive(Debug, Parser)]
-#[clap(author, version, about)]
-pub struct Args {
-    #[arg(short = 'm', long)]
-    pub message: String,
+pub fn cli() -> Command {
+    Command::new("infra-notify")
+        .subcommand_required(true)
+        .subcommand(Command::new("dump-success"))
+        .subcommand(Command::new("dump-failure"))
+        .subcommand(Command::new("upload-success"))
+        .subcommand(Command::new("upload-failure"))
+        .group(ArgGroup::new("state"))
 }
