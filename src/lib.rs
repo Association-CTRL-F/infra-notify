@@ -32,25 +32,25 @@ pub const DUMP_SUCCESS: &str = r#"{"embeds":[{"color":5753130,
 "title":"VPS BACKUP",
 "description":"Le dump a bien été effectuée",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
-"timestamp":"2023-01-07T22:11:25.693Z"}]}"#;
+"timestamp":""}]}"#;
 
 pub const DUMP_FAILURE: &str = r#"{"embeds":[{"color":16711680,
 "title":"VPS BACKUP",
 "description":"Le dump de la database à rencontré un problème",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
-"timestamp":"2023-01-07T22:11:25.693Z"}]}"#;
+"timestamp":""}]}"#;
 
 pub const UPLOAD_SUCCESS: &str = r#"{"embeds":[{"color":5753130,
 "title":"VPS BACKUP",
 "description":"La sauvegarde vers Gdrive a bien été effectuée"
 ,"thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
-"timestamp":"2023-01-07T22:11:25.693Z"}]}"#;
+"timestamp":""}]}"#;
 
 pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{"color":16711680,
 "title":"VPS BACKUP",
 "description":"La sauvegarde vers Gdrive a rencontré un problème"
 ,"thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
-"timestamp":"2023-01-07T22:11:25.693Z"}]}"#;
+"timestamp":""}]}"#;
 
 pub fn send(msg: &Message, url: &str) -> Result<Response, Error> {
     let res = Client::new().post(url).json(msg).send()?;
