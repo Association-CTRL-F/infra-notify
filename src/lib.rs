@@ -1,5 +1,5 @@
-use reqwest::blocking::{Client, Response};
-use reqwest::Error;
+use ureq::post;
+use ureq::{Response, Error};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -53,6 +53,7 @@ pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{"color":16711680,
 "timestamp":""}]}"#;
 
 pub fn send(msg: &Message, url: &str) -> Result<Response, Error> {
-    let res = Client::new().post(url).json(msg).send()?;
+    let res = ureq::post(url)
+        .send_json(msg)?;
     Ok(res)
 }
