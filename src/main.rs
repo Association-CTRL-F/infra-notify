@@ -14,7 +14,7 @@ fn main() -> ExitCode {
     let webhook_url = if let Ok(url) = env::var("WEBHOOK_URL") {
         url
     } else {
-        error!("WEBHOOK_URL env var is not set");
+        error!("WEBHOOK_URL environmement var is not set");
         return ExitCode::FAILURE;
     };
 

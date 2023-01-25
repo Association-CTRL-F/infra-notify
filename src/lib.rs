@@ -3,7 +3,7 @@ use ureq::{Error, Response};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Message {
-    pub embeds: Vec<Embed>,
+    embeds: Vec<Embed>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -12,7 +12,7 @@ pub struct Embed {
     title: String,
     description: String,
     thumbnail: Thumbnail,
-    pub timestamp: String,
+    timestamp: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -28,7 +28,7 @@ impl Message {
 
 pub const DUMP_SUCCESS: &str = r#"{"embeds":[{"color":5753130,
 "title":"VPS BACKUP",
-"description":"L'exportation a bien été effectué",
+"description":"L'exportation a bien été effectuée",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
