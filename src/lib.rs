@@ -40,7 +40,7 @@ pub const DUMP_FAILURE: &str = r#"{"embeds":[{"color":16711680,
 
 pub const UPLOAD_SUCCESS: &str = r#"{"embeds":[{"color":5753130,
 "title":"VPS BACKUP",
-"description":"La sauvegarde bien été effectuée",
+"description":"La sauvegarde a bien été effectuée",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
