@@ -32,7 +32,7 @@ pub const DUMP_SUCCESS: &str = r#"{"embeds":[{"color":5753130,
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
-pub const DUMP_FAILURE: &str = r#"{"embeds":[{"color":16711680,
+pub const DUMP_FAILURE: &str = r#"{"embeds":[{"color":13195050,
 "title":"VPS BACKUP",
 "description":"L'exportation a rencontré un problème",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
@@ -44,7 +44,7 @@ pub const UPLOAD_SUCCESS: &str = r#"{"embeds":[{"color":5753130,
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
-pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{"color":16711680,
+pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{"color":13195050,
 "title":"VPS BACKUP",
 "description":"La sauvegarde a rencontré un problème",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
