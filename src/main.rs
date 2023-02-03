@@ -27,7 +27,7 @@ fn main() -> ExitCode {
     };
 
     let timestamp = Local::now().to_rfc3339();
-    msg.set_timestamp(timestamp);
+    msg.set_timestamp(&timestamp);
 
     for _ in 0..4 {
         let res = send(&msg, &webhook_url);

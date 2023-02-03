@@ -21,8 +21,12 @@ pub struct Thumbnail {
 }
 
 impl Message {
-    pub fn set_timestamp(&mut self, timestamp: String) {
-        self.embeds[0].timestamp = timestamp;
+    pub fn set_timestamp(&mut self, timestamp: &str) {
+        self.embeds
+            .iter_mut()
+            .for_each(|embed|
+                { embed.timestamp = timestamp.to_string() } 
+            );                
     }
 }
 
