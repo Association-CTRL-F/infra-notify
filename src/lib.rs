@@ -7,7 +7,7 @@ pub struct Message {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Embed {
+struct Embed {
     color: u64,
     title: String,
     description: String,
@@ -16,7 +16,7 @@ pub struct Embed {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Thumbnail {
+struct Thumbnail {
     url: String,
 }
 
@@ -57,4 +57,18 @@ pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{"color":13195050,
 pub fn send(msg: &Message, url: &str) -> Result<Response, Error> {
     let res = ureq::post(url).send_json(msg)?;
     Ok(res)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_parse_consts() {
+        let consts: Vec<&str> = vec![DUMP_SUCCESS, DUMP_FAILURE, UPLOAD_SUCCESS, UPLOAD_FAILURE];
+
+        assert!(consts
+            .iter()
+            .all(|s| serde_json::from_str::<Message>(&s).is_ok()))
+    }
 }
