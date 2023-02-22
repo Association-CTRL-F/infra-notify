@@ -24,9 +24,7 @@ impl Message {
     pub fn set_timestamp(&mut self, timestamp: &str) {
         self.embeds
             .iter_mut()
-            .for_each(|embed|
-                { embed.timestamp = timestamp.to_string() } 
-            );                
+            .for_each(|embed| embed.timestamp = timestamp.to_string());
     }
 }
 
@@ -54,7 +52,7 @@ pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{"color":13195050,
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
-pub fn send(msg: &Message, url: &str) -> Result<Response, Error> {
+pub fn send(msg: &Message, url: &str) -> Result<Response, Box<Error>> {
     let res = ureq::post(url).send_json(msg)?;
     Ok(res)
 }
