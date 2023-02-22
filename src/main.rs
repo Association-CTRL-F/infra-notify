@@ -32,16 +32,18 @@ fn main() -> ExitCode {
     for _ in 0..4 {
         let res = send(&msg, &webhook_url);
         match res {
-            Err(Error::Transport(e)) => {
-                warn!("Transport error {}", e);
-                thread::sleep(time::Duration::from_millis(500));
-                continue;
-            }
-            Err(Error::Status(code, response)) => {
-                warn!("HTTP Error: {} {}", code, response.status_text());
-                thread::sleep(time::Duration::from_millis(500));
-                continue;
-            }
+            Err(boxed_err) => match *boxed_err {
+                Error::Transport(e) => {
+                    warn!("Transport error {}", e);
+                    thread::sleep(time::Duration::from_millis(500));
+                    continue;
+                }
+                Error::Status(code, response) => {
+                    warn!("HTTP Error: {} {}", code, response.status_text());
+                    thread::sleep(time::Duration::from_millis(500));
+                    continue;
+                }
+            },
             Ok(_) => {
                 info!("Notification successfully send");
                 return ExitCode::SUCCESS;

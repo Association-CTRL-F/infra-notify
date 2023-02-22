@@ -7,7 +7,7 @@ pub struct Message {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Embed {
+struct Embed {
     color: u64,
     title: String,
     description: String,
@@ -16,7 +16,7 @@ pub struct Embed {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Thumbnail {
+struct Thumbnail {
     url: String,
 }
 
@@ -24,9 +24,7 @@ impl Message {
     pub fn set_timestamp(&mut self, timestamp: &str) {
         self.embeds
             .iter_mut()
-            .for_each(|embed|
-                { embed.timestamp = timestamp.to_string() } 
-            );                
+            .for_each(|embed| embed.timestamp = timestamp.to_string());
     }
 }
 
@@ -54,7 +52,21 @@ pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{"color":13195050,
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
-pub fn send(msg: &Message, url: &str) -> Result<Response, Error> {
+pub fn send(msg: &Message, url: &str) -> Result<Response, Box<Error>> {
     let res = ureq::post(url).send_json(msg)?;
     Ok(res)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_parse_consts() {
+        let consts: Vec<&str> = vec![DUMP_SUCCESS, DUMP_FAILURE, UPLOAD_SUCCESS, UPLOAD_FAILURE];
+
+        assert!(consts
+            .iter()
+            .all(|s| serde_json::from_str::<Message>(&s).is_ok()))
+    }
 }
