@@ -1,7 +1,7 @@
 use chrono::Local;
 use env_logger::Env;
 use infra_notify::{send, Message};
-use infra_notify::{DUMP_FAILURE, DUMP_SUCCESS, UPLOAD_FAILURE, UPLOAD_SUCCESS};
+use infra_notify::{UPLOAD_FAILURE, UPLOAD_SUCCESS};
 use log::{error, info, warn};
 use std::process::ExitCode;
 use std::{env, thread, time};
@@ -19,8 +19,6 @@ fn main() -> ExitCode {
     };
 
     let mut msg: Message = match matches.subcommand() {
-        Some(("dump-success", _)) => serde_json::from_str(DUMP_SUCCESS).unwrap(),
-        Some(("dump-failure", _)) => serde_json::from_str(DUMP_FAILURE).unwrap(),
         Some(("upload-success", _)) => serde_json::from_str(UPLOAD_SUCCESS).unwrap(),
         Some(("upload-failure", _)) => serde_json::from_str(UPLOAD_FAILURE).unwrap(),
         _ => unreachable!(),

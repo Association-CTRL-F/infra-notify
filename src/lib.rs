@@ -28,27 +28,17 @@ impl Message {
     }
 }
 
-pub const DUMP_SUCCESS: &str = r#"{"embeds":[{"color":5753130,
-"title":"VPS BACKUP",
-"description":"L'exportation a bien été effectuée",
-"thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
-"timestamp":""}]}"#;
-
-pub const DUMP_FAILURE: &str = r#"{"embeds":[{"color":13195050,
-"title":"VPS BACKUP",
-"description":"L'exportation a rencontré un problème",
-"thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
-"timestamp":""}]}"#;
-
-pub const UPLOAD_SUCCESS: &str = r#"{"embeds":[{"color":5753130,
+pub const UPLOAD_SUCCESS: &str = r#"{"embeds":[{
+"color":5753130,
 "title":"VPS BACKUP",
 "description":"La sauvegarde a bien été effectuée",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
-pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{"color":13195050,
+pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{
+"color":13195050,
 "title":"VPS BACKUP",
-"description":"La sauvegarde a rencontré un problème",
+"description":"La sauvegarde a rencontré un problème <@129728782734065664>",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
@@ -63,7 +53,7 @@ mod tests {
 
     #[test]
     fn can_parse_consts() {
-        let consts: Vec<&str> = vec![DUMP_SUCCESS, DUMP_FAILURE, UPLOAD_SUCCESS, UPLOAD_FAILURE];
+        let consts: Vec<&str> = vec![UPLOAD_SUCCESS, UPLOAD_FAILURE];
 
         assert!(consts
             .iter()
