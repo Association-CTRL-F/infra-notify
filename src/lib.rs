@@ -38,7 +38,7 @@ pub const UPLOAD_SUCCESS: &str = r#"{"embeds":[{
 pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{
 "color":13195050,
 "title":"VPS BACKUP",
-"description":"La sauvegarde a rencontré un problème <@129728782734065664>",
+"description":"La sauvegarde a rencontré un problème",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
 
