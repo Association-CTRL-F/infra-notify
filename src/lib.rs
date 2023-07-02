@@ -57,6 +57,6 @@ mod tests {
 
         assert!(consts
             .iter()
-            .all(|s| serde_json::from_str::<Message>(&s).is_ok()))
+            .all(|s| serde_json::from_str::<Message>(*s).is_ok()))
     }
 }
