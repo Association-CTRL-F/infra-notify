@@ -1,6 +1,6 @@
 use chrono::Local;
 use env_logger::Env;
-use infra_notify::{send, Message};
+use infra_notify::Message;
 use infra_notify::{UPLOAD_FAILURE, UPLOAD_SUCCESS};
 use log::{error, info, warn};
 use std::process::ExitCode;
@@ -28,7 +28,7 @@ fn main() -> ExitCode {
     msg.set_timestamp(&timestamp);
 
     for _ in 0..4 {
-        let res = send(&msg, &webhook_url);
+        let res = msg.send(&webhook_url);
         match res {
             Err(boxed_err) => match *boxed_err {
                 Error::Transport(e) => {

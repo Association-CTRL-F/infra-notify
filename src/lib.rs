@@ -26,6 +26,11 @@ impl Message {
             .iter_mut()
             .for_each(|embed| embed.timestamp = timestamp.to_string());
     }
+
+    pub fn send(&self, url: &str) -> Result<Response, Box<Error>> {
+        let res = ureq::post(url).send_json(self)?;
+        Ok(res)
+    }
 }
 
 pub const UPLOAD_SUCCESS: &str = r#"{"embeds":[{
@@ -41,11 +46,6 @@ pub const UPLOAD_FAILURE: &str = r#"{"embeds":[{
 "description":"La sauvegarde a rencontré un problème",
 "thumbnail":{"url":"https://ctrl-f.io/assets/img/logo.png"},
 "timestamp":""}]}"#;
-
-pub fn send(msg: &Message, url: &str) -> Result<Response, Box<Error>> {
-    let res = ureq::post(url).send_json(msg)?;
-    Ok(res)
-}
 
 #[cfg(test)]
 mod tests {
