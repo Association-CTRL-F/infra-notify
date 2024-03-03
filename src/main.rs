@@ -1,47 +1,31 @@
 use crate::args::Args;
 use crate::embed::Message;
+use crate::config::Extract;
 use chrono::Utc;
 use clap::Parser;
 use embed::EmbedBuilder;
 use env_logger::Env;
+use config::Config;
+use config::ConfigError;
 use log::{error, info, warn};
 use parser::ResticProfiles;
 use std::{env, fs, process::ExitCode, thread, time};
 use ureq::Error;
 mod args;
 mod embed;
+mod config;
 mod generate_embed;
 mod parser;
 
 fn main() -> ExitCode {
-    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
-    let args = Args::parse();
+    let config = setup().get_data_or_exit();
+    let fields = config
+        .profiles
+        .clone()
+        .generate_embed_fields(&config.profile_name)
+        .get_data_or_exit();
 
-    let webhook_url = if let Ok(url) = env::var("WEBHOOK_URL") {
-        url
-    } else {
-        error!("WEBHOOK_URL environmement var is not set");
-        return ExitCode::FAILURE;
-    };
-
-    let status = match fs::read_to_string(&args.path) {
-        Ok(status) => status,
-        Err(err) => {
-            error!("File read error: {}", err);
-            return ExitCode::FAILURE;
-        }
-    };
-
-    let profiles = match serde_json::from_str::<ResticProfiles>(&status) {
-        Ok(profiles) => profiles,
-        Err(err) => {
-            error!("Parser error: {}", err);
-            return ExitCode::FAILURE;
-        }
-    };
-
-    let color = profiles.color(&args.name);
-    let fields = profiles.generate_embed_fields(&args.name);
+    let color = config.profiles.color(&config.profile_name);
     let iso_timestamp = Utc::now().to_rfc3339();
 
     let r = EmbedBuilder::new()
@@ -55,7 +39,7 @@ fn main() -> ExitCode {
     let message = Message { embeds: vec![r] };
 
     for _ in 0..4 {
-        let res = message.send(&webhook_url);
+        let res = message.send(&config.webhook_url);
         match res {
             Err(boxed_err) => match *boxed_err {
                 Error::Transport(e) => {
@@ -77,4 +61,20 @@ fn main() -> ExitCode {
     }
     error!("Could not send the notification");
     ExitCode::FAILURE
+}
+
+fn setup() -> Result<Config, ConfigError> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+    let args = Args::parse();
+
+    let profile_name = args.name;
+    let webhook_url = env::var("WEBHOOK_URL")?;
+    let profiles = fs::read_to_string(&args.path)?;
+    let profiles = serde_json::from_str::<ResticProfiles>(&profiles)?;
+
+    Ok(Config {
+        webhook_url,
+        profile_name,
+        profiles,
+    })
 }
