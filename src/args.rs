@@ -1,9 +1,9 @@
-use clap::{crate_version, ArgGroup, Command};
-pub fn cli() -> Command {
-    Command::new("infra-notify")
-        .version(crate_version!())
-        .subcommand_required(true)
-        .subcommand(Command::new("upload-success"))
-        .subcommand(Command::new("upload-failure"))
-        .group(ArgGroup::new("state"))
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(version)]
+pub struct Args {
+    /// Path to status file
+    #[arg(short, long)]
+    pub path: String,
 }

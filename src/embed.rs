@@ -1,8 +1,16 @@
 use serde::{Deserialize, Serialize};
+use ureq::{Error, Response};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Message {
     pub embeds: Vec<Embed>,
+}
+
+impl Message {
+    pub fn send(&self, url: &str) -> Result<Response, Box<Error>> {
+        let res = ureq::post(url).send_json(self)?;
+        Ok(res)
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Default)]

@@ -1,16 +1,23 @@
-use chrono::Local;
+use crate::args::Args;
+use crate::embed::Message;
+use chrono::Utc;
+use clap::Parser;
+use embed::EmbedBuilder;
 use env_logger::Env;
-use infra_notify::Message;
-use infra_notify::{UPLOAD_FAILURE, UPLOAD_SUCCESS};
+use generate_embed::Status;
 use log::{error, info, warn};
-use std::process::ExitCode;
-use std::{env, thread, time};
+use parser::ResticProfiles;
+use std::{env, fs, process::ExitCode, thread, time};
 use ureq::Error;
 mod args;
+mod embed;
+mod generate_embed;
+mod parser;
 
 fn main() -> ExitCode {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
-    let matches = args::cli().get_matches();
+    let args = Args::parse();
+
     let webhook_url = if let Ok(url) = env::var("WEBHOOK_URL") {
         url
     } else {
@@ -18,17 +25,44 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     };
 
-    let mut msg: Message = match matches.subcommand() {
-        Some(("upload-success", _)) => serde_json::from_str(UPLOAD_SUCCESS).unwrap(),
-        Some(("upload-failure", _)) => serde_json::from_str(UPLOAD_FAILURE).unwrap(),
-        _ => unreachable!(),
+    let status = match fs::read_to_string(args.path) {
+        Ok(status) => status,
+        Err(err) => {
+            error!("File read error: {}", err);
+            return ExitCode::FAILURE;
+        }
     };
 
-    let timestamp = Local::now().to_rfc3339();
-    msg.set_timestamp(&timestamp);
+    let profiles = match serde_json::from_str::<ResticProfiles>(&status) {
+        Ok(profiles) => profiles,
+        Err(err) => {
+            error!("Parser error: {}", err);
+            return ExitCode::FAILURE;
+        }
+    };
+
+    const GREEN: u64 = 5753130;
+    const RED: u64 = 13195050;
+    let color = match profiles.status() {
+        Status::AllSucceded => GREEN,
+        _ => RED,
+    };
+
+    let fields = profiles.generate_embed_fields();
+    let iso_timestamp = Utc::now().to_rfc3339();
+
+    let r = EmbedBuilder::new()
+        .title("VPS BACKUP STATUS")
+        .color(color)
+        .thumbnail("https://ctrl-f.io/assets/img/logo.png")
+        .fields(fields)
+        .timestamp(iso_timestamp)
+        .build();
+
+    let message = Message { embeds: vec![r] };
 
     for _ in 0..4 {
-        let res = msg.send(&webhook_url);
+        let res = message.send(&webhook_url);
         match res {
             Err(boxed_err) => match *boxed_err {
                 Error::Transport(e) => {

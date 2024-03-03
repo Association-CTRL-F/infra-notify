@@ -19,8 +19,8 @@ impl ResticProfiles {
                         "
                         > Success: {}
                         > Duration: {} seconds
-                        > MebiBytes added: {}
-                        > MebiBytes proccessed: {}
+                        > Bytes added: {}
+                        > Bytes processed: {}
                         ",
                         backup.success,
                         backup.duration,
