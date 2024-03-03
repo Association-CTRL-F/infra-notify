@@ -1,84 +1,51 @@
-use std::collections::BTreeMap;
-
 use crate::{
     embed::{Field, FieldBuilder},
     parser::ResticProfiles,
 };
-
 use human_bytes::human_bytes;
 
 impl ResticProfiles {
-    pub fn generate_embed_fields(self) -> Vec<Field> {
+    pub fn generate_embed_fields(self, profile: &str) -> Vec<Field> {
         let mut fields = vec![];
-        for s in self.profiles.iter() {
-            let backup = &s.1.backup;
-            fields.push({
-                FieldBuilder::new()
-                    .name(s.0)
-                    .value(format!(
-                        "
-                        > Success: {}
-                        > Duration: {} seconds
-                        > Bytes added: {}
-                        > Bytes processed: {}
-                        ",
-                        backup.success,
-                        backup.duration,
-                        human_bytes(backup.bytes_added as f64),
-                        human_bytes(backup.bytes_total as f64),
-                    ))
-                    .build()
-            });
+        let current_profile = self.profiles.get(profile).unwrap();
 
-            if !backup.success {
-                fields.push(
-                    FieldBuilder::new()
-                        .name(format!("{} backup failed !", s.0))
-                        .value(format!(
-                            "
-                            ```diff\n- Error: {}\n- Stderr: {}```",
-                            backup.error, backup.stderr
-                        ))
-                        .build(),
-                )
-            }
+        fields.push({
+            FieldBuilder::new()
+                .name(profile)
+                .value(format!(
+                    "> Success: {}
+                    > Duration: {} seconds
+                    > Bytes added: {}
+                    > Bytes processed: {}",
+                    current_profile.backup.success,
+                    current_profile.backup.duration,
+                    human_bytes(current_profile.backup.bytes_added as f64),
+                    human_bytes(current_profile.backup.bytes_total as f64),
+                ))
+                .build()
+        });
+
+        if !current_profile.backup.success {
+            fields.push(
+                FieldBuilder::new()
+                    .name(format!("{} backup failed !", profile))
+                    .value(format!(
+                        "> Error: {}\n> Stderr: {}",
+                        current_profile.backup.error, current_profile.backup.stderr
+                    ))
+                    .build(),
+            )
         }
         fields
     }
 
-    pub fn status(&self) -> Status {
-        let mut count = BTreeMap::new();
-        let results = self
-            .profiles
-            .iter()
-            .map(|profile| profile.1.backup.success)
-            .collect::<Vec<bool>>();
-
-        for value in results.iter() {
-            let count = count.entry(value).or_insert(0);
-            *count += 1;
-        }
-
-        match count.get(&true) {
-            Some(true_count) => {
-                let num_status = results.len();
-                if *true_count == num_status {
-                    Status::AllSucceded
-                } else if *true_count == num_status - 1 {
-                    Status::OneFailed
-                } else {
-                    Status::MultipleFailed
-                }
-            }
-            None => Status::AllFailed,
+    pub fn color(&self, profile: &str) -> u64 {
+        const GREEN: u64 = 5753130;
+        const RED: u64 = 13195050;
+        let current_profile = self.profiles.get(profile).unwrap();
+        match current_profile.backup.success {
+            true => GREEN,
+            false => RED,
         }
     }
-}
-
-#[derive(Debug)]
-pub enum Status {
-    AllSucceded,
-    MultipleFailed,
-    OneFailed,
-    AllFailed,
 }

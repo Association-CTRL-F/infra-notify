@@ -4,7 +4,6 @@ use chrono::Utc;
 use clap::Parser;
 use embed::EmbedBuilder;
 use env_logger::Env;
-use generate_embed::Status;
 use log::{error, info, warn};
 use parser::ResticProfiles;
 use std::{env, fs, process::ExitCode, thread, time};
@@ -25,7 +24,7 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     };
 
-    let status = match fs::read_to_string(args.path) {
+    let status = match fs::read_to_string(&args.path) {
         Ok(status) => status,
         Err(err) => {
             error!("File read error: {}", err);
@@ -41,14 +40,8 @@ fn main() -> ExitCode {
         }
     };
 
-    const GREEN: u64 = 5753130;
-    const RED: u64 = 13195050;
-    let color = match profiles.status() {
-        Status::AllSucceded => GREEN,
-        _ => RED,
-    };
-
-    let fields = profiles.generate_embed_fields();
+    let color = profiles.color(&args.name);
+    let fields = profiles.generate_embed_fields(&args.name);
     let iso_timestamp = Utc::now().to_rfc3339();
 
     let r = EmbedBuilder::new()
