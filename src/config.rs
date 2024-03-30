@@ -1,6 +1,5 @@
 use crate::parser::ResticProfiles;
 use log::error;
-use serde_json;
 use std::{env::VarError, fmt::Debug, io, process};
 
 pub struct Config {

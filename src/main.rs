@@ -1,19 +1,19 @@
 use crate::args::Args;
-use crate::embed::Message;
 use crate::config::Extract;
+use crate::embed::Message;
 use chrono::Utc;
 use clap::Parser;
-use embed::EmbedBuilder;
-use env_logger::Env;
 use config::Config;
 use config::ConfigError;
+use embed::EmbedBuilder;
+use env_logger::Env;
 use log::{error, info, warn};
 use parser::ResticProfiles;
 use std::{env, fs, process::ExitCode, thread, time};
 use ureq::Error;
 mod args;
-mod embed;
 mod config;
+mod embed;
 mod generate_embed;
 mod parser;
 

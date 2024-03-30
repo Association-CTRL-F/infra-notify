@@ -1,6 +1,6 @@
 use crate::{
-    embed::{Field, FieldBuilder},
     config::ConfigError,
+    embed::{Field, FieldBuilder},
     parser::ResticProfiles,
 };
 use human_bytes::human_bytes;
@@ -8,7 +8,10 @@ use human_bytes::human_bytes;
 impl ResticProfiles {
     pub fn generate_embed_fields(self, profile: &str) -> Result<Vec<Field>, ConfigError> {
         let mut fields = vec![];
-        let current_profile = self.profiles.get(profile).ok_or(ConfigError::ProfileNotFound)?;
+        let current_profile = self
+            .profiles
+            .get(profile)
+            .ok_or(ConfigError::ProfileNotFound)?;
 
         fields.push({
             FieldBuilder::new()
@@ -50,4 +53,3 @@ impl ResticProfiles {
         }
     }
 }
-
