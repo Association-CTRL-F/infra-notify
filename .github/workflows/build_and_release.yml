@@ -1,0 +1,48 @@
+name: CI/CD
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  check:
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: "write"
+      contents: "read"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+      - uses: DeterminateSystems/flake-checker-action@main
+
+      - name: Run CI from flake.nix
+        run: |
+          nix flake check
+
+  build_and_release:
+    runs-on: ubuntu-22.04
+    needs: [check]
+    permissions:
+      id-token: "write"
+      contents: "read"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Build OCI image from flake.nix
+        run: |
+          nix build
+
+      - name: Rename infra-notify binary
+        run: |
+          cp result infra-notify-amd64
+
+      - uses: actions/checkout@v4
+      - name: release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            infra-notify-amd64
