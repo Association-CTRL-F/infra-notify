@@ -3,63 +3,96 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
 
     crane = {
       url = "github:ipetkov/crane";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    flake-utils.url = "github:numtide/flake-utils";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
+
+    advisory-db = {
+      url = "github:rustsec/advisory-db";
+      flake = false;
+    };
   };
 
   outputs = {
     self,
     nixpkgs,
-    crane,
     flake-utils,
+    crane,
+    rust-overlay,
+    advisory-db,
     ...
   }:
     flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [(import rust-overlay)];
+      };
 
+      inherit (pkgs) lib;
       craneLib = crane.lib.${system};
-      bin = craneLib.buildPackage {
-        src = craneLib.cleanCargoSource (craneLib.path ./.);
+      src = craneLib.cleanCargoSource (craneLib.path ./.);
+
+      commonArgs = {
+        inherit src;
         strictDeps = true;
+        buildInputs = [] ++ lib.optionals pkgs.stdenv.isDarwin [];
+      };
 
-        buildInputs =
-          [
-          ]
-          ++ pkgs.lib.optionals pkgs.stdenv.isDarwin [
-            # Additional darwin specific inputs can be set here
-          ];
+      cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+      infra-notify = craneLib.buildPackage (commonArgs // {inherit cargoArtifacts;});
 
-        # Additional environment variables can be set directly
-        # MY_CUSTOM_VAR = "some value";
+      infra-notify-clippy = craneLib.cargoClippy (commonArgs
+        // {
+          inherit cargoArtifacts;
+          cargoClippyExtraArgs = "--all-targets -- --deny warnings";
+        });
+
+      infra-notify-doc = craneLib.cargoDoc (commonArgs
+        // {
+          inherit cargoArtifacts;
+        });
+
+      # Check formatting
+      infra-notify-fmt = craneLib.cargoFmt {
+        inherit src;
+      };
+
+      # Audit dependencies
+      infra-notify-audit = craneLib.cargoAudit {
+        inherit src advisory-db;
       };
     in {
       checks = {
-        infra-bot = bin;
+        inherit infra-notify-doc;
+        inherit infra-notify-clippy;
+        inherit infra-notify-fmt;
+        inherit infra-notify-audit;
       };
 
       packages = {
-        default = bin;
-        inherit bin;
+        inherit infra-notify;
+        default = infra-notify;
       };
 
       apps.default = flake-utils.lib.mkApp {
-        drv = bin;
+        drv = infra-notify;
       };
 
       devShells.default = craneLib.devShell {
-        # Inherit inputs from checks.
         checks = self.checks.${system};
-
-        # Additional dev-shell environment variables can be set directly
-        # MY_CUSTOM_DEVELOPMENT_VAR = "something else";
-
-        # Extra inputs can be added here; cargo and rustc are provided by default.
         packages = [
+          pkgs.cargo-edit
         ];
       };
     });
