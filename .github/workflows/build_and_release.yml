@@ -43,5 +43,6 @@ jobs:
       - name: Create github release
         uses: softprops/action-gh-release@v2
         with:
+          token: ${{ github.token }}
           files: |
             infra-notify-amd64
