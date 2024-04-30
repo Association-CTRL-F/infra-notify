@@ -32,16 +32,15 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Build OCI image from flake.nix
+      - name: Build infra-notify binary
         run: |
           nix build
 
       - name: Rename infra-notify binary
         run: |
-          cp result infra-notify-amd64
+          cp result/bin/infra-notify infra-notify-amd64
 
-      - uses: actions/checkout@v4
-      - name: release
+      - name: Create github release
         uses: softprops/action-gh-release@v2
         with:
           files: |
