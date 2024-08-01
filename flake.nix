@@ -14,7 +14,6 @@
       url = "github:oxalica/rust-overlay";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
       };
     };
 
@@ -40,7 +39,7 @@
       };
 
       inherit (pkgs) lib;
-      craneLib = crane.lib.${system};
+      craneLib = (crane.mkLib nixpkgs.legacyPackages.${system});
       src = craneLib.cleanCargoSource (craneLib.path ./.);
 
       commonArgs = {
@@ -91,8 +90,9 @@
 
       devShells.default = craneLib.devShell {
         checks = self.checks.${system};
-        packages = [
-          pkgs.cargo-edit
+        packages = with pkgs; [
+          cargo-edit
+          cargo-machete
         ];
       };
     });
