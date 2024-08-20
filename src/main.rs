@@ -31,7 +31,7 @@ fn main() -> ExitCode {
     let r = EmbedBuilder::new()
         .title("VPS BACKUP STATUS")
         .color(color)
-        .thumbnail("https://ctrl-f.io/assets/img/logo.png")
+        .thumbnail("https://ctrl-f.info/assets/img/logo.png")
         .fields(fields)
         .timestamp(iso_timestamp)
         .build();
