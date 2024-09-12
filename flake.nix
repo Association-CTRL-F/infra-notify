@@ -72,6 +72,7 @@
       };
     in {
       checks = {
+        inherit infra-notify;
         inherit infra-notify-doc;
         inherit infra-notify-clippy;
         inherit infra-notify-fmt;
