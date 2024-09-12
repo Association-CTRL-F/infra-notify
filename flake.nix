@@ -7,7 +7,6 @@
 
     crane = {
       url = "github:ipetkov/crane";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     rust-overlay = {
@@ -39,7 +38,7 @@
       };
 
       inherit (pkgs) lib;
-      craneLib = (crane.mkLib nixpkgs.legacyPackages.${system});
+      craneLib = crane.mkLib nixpkgs.legacyPackages.${system};
       src = craneLib.cleanCargoSource (craneLib.path ./.);
 
       commonArgs = {
